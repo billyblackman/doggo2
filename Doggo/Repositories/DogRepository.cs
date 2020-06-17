@@ -27,6 +27,55 @@ namespace Doggo.Repositories
             }
         }
 
+        public List<Dog> GetAllDogs()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT Id, [Name], Breed, Notes, ImageUrl, OwnerId 
+                        FROM Dog
+                    ";
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<Dog> allDogs = new List<Dog>();
+                    while (reader.Read())
+                    {
+                        Dog d = new Dog()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                            OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
+                            Breed = reader.GetString(reader.GetOrdinal("Breed")),
+                            Notes = ReaderHelpers.GetNullableString(reader, "Notes"),
+                            ImageUrl = ReaderHelpers.GetNullableString(reader, "ImageUrl")
+                        };
+
+
+                        // We could also null check optional columns like this
+
+                        //if (reader.IsDBNull(reader.GetOrdinal("Notes")) == false)
+                        //{
+                        //    d.Notes = reader.GetString(reader.GetOrdinal("Notes"));
+                        //}
+
+                        //if (reader.IsDBNull(reader.GetOrdinal("ImageUrl")) == false)
+                        //{
+                        //    d.ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl"));
+                        //}
+
+                        allDogs.Add(d);
+                    }
+
+                    reader.Close();
+                    return allDogs;
+                }
+            }
+        }
+
         public List<Dog> GetDogsByOwnerId(int ownerId)
         {
             using (SqlConnection conn = Connection)
