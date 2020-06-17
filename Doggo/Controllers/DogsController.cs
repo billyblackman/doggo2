@@ -10,13 +10,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace Doggo.Controllers
 {
-    public class DogController1 : Controller
+    public class DogsController : Controller
     {
 
         private readonly OwnerRepository _ownerRepo;
         private readonly DogRepository _dogRepo;
 
-        public DogController1(IConfiguration config)
+        public DogsController(IConfiguration config)
         {
             _ownerRepo = new OwnerRepository(config);
             _dogRepo = new DogRepository(config);
