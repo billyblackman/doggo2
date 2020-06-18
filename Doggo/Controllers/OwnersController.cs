@@ -108,7 +108,7 @@ namespace Doggo.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch   
             {
                 //return View(owner);
                 throw new Exception("Edit did not work");
