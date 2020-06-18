@@ -86,9 +86,15 @@ namespace Doggo.Controllers
         // GET: Owners/Edit/5
         public ActionResult Edit(int id)
         {
-            Owner owner = _ownerRepo.GetOwnerById(id);
+            List<Neighborhood> neighborhoods = _neighborhoodRepo.GetAll();
 
-            return View(owner);
+            OwnerFormViewModel vm = new OwnerFormViewModel()
+            {
+                Owner = _ownerRepo.GetOwnerById(id),
+                Neighborhoods = neighborhoods
+            };
+
+            return View(vm);
         }
 
         // POST: OwnersController/Edit/5
@@ -104,7 +110,8 @@ namespace Doggo.Controllers
             }
             catch
             {
-                return View(owner);
+                //return View(owner);
+                throw new Exception("Edit did not work");
             }
         }
 
