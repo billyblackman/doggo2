@@ -35,8 +35,16 @@ namespace Doggo.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT Id, [Name], Breed, Notes, ImageUrl, OwnerId 
-                        FROM Dog
+                        SELECT 
+                            d.Id,
+                            d.[Name],
+                            d.Breed,
+                            d.Notes,
+                            d.ImageUrl,
+                            d.OwnerId ,
+                            o.[Name] as 'Owner Name'
+                        FROM Dog d
+                        Join Owner o on o.Id = d.OwnerId
                     ";
 
                     SqlDataReader reader = cmd.ExecuteReader();
