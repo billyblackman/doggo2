@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Doggo.Models;
+using Doggo.Models.ViewModels;
 using Doggo.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,14 @@ namespace Doggo.Controllers
         // GET: DogController1/Create
         public ActionResult Create()
         {
+            List<Owner> owners = _ownerRepo.GetAllOwners();
+
+            DogFormViewModel vm = new DogFormViewModel()
+            {
+                Dog = new Dog(),
+                Owners = owners
+            };
+
             return View();
         }
 
