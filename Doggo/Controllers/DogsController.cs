@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -25,8 +26,8 @@ namespace Doggo.Controllers
             _dogRepo = new DogRepository(config);
         }
 
-        [Authorize]
         // GET: DogController1
+        [Authorize]
         public ActionResult Index()
         {
             int ownerId = GetCurrentUserId();
@@ -37,9 +38,25 @@ namespace Doggo.Controllers
         }
 
         // GET: DogController1/Details/5
+        [Authorize]
         public ActionResult Details(int id)
         {
             return View();
+        }
+
+        // GET: DogController1/Create
+        [Authorize]
+        public ActionResult Create()
+        {
+            List<Owner> owners = _ownerRepo.GetAllOwners();
+
+            DogFormViewModel vm = new DogFormViewModel()
+            {
+                Dog = new Dog(),
+                Owners = owners
+            };
+
+            return View(vm);
         }
 
         [Authorize]
@@ -62,24 +79,8 @@ namespace Doggo.Controllers
             }
         }
 
-        // POST: DogController1/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Dog dog)
-        {
-            try
-            {
-                _dogRepo.AddDog(dog);
-
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                return View(dog);
-            }
-        }
-
         // GET: DogController1/Edit/5
+        [Authorize]
         public ActionResult Edit(int id)
         {
             Dog dog = _dogRepo.GetDogById(id);
@@ -88,6 +89,7 @@ namespace Doggo.Controllers
         }
 
         // POST: DogController1/Edit/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Dog dog)
@@ -105,12 +107,14 @@ namespace Doggo.Controllers
         }
 
         // GET: DogController1/Delete/5
+        [Authorize]
         public ActionResult Delete(int id)
         {
             return View();
         }
 
         // POST: DogController1/Delete/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
