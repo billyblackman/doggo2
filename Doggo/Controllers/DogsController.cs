@@ -48,7 +48,7 @@ namespace Doggo.Controllers
                 Owners = owners
             };
 
-            return View();
+            return View(vm);
         }
 
         // POST: DogController1/Create
