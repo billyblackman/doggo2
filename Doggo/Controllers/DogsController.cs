@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Doggo.Models;
 using Doggo.Models.ViewModels;
 using Doggo.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ namespace Doggo.Controllers
             _dogRepo = new DogRepository(config);
         }
 
+        [Authorize]
         // GET: DogController1
         public ActionResult Index()
         {
@@ -40,18 +42,24 @@ namespace Doggo.Controllers
             return View();
         }
 
-        // GET: DogController1/Create
-        public ActionResult Create()
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Dog dog)
         {
-            List<Owner> owners = _ownerRepo.GetAllOwners();
-
-            DogFormViewModel vm = new DogFormViewModel()
+            try
             {
-                Dog = new Dog(),
-                Owners = owners
-            };
+                // update the dogs OwnerId to the current user's Id 
+                dog.OwnerId = GetCurrentUserId();
 
-            return View(vm);
+                _dogRepo.AddDog(dog);
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(dog);
+            }
         }
 
         // POST: DogController1/Create
