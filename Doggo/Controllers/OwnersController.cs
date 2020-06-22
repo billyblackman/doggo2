@@ -71,18 +71,20 @@ namespace Doggo.Controllers
         // POST: OwnersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Owner owner)
+        public ActionResult Create(OwnerFormViewModel vm)
         {
             try
             {
-                _ownerRepo.AddOwner(owner);
+                vm.Owner.Neighborhood = _neighborhoodRepo.GetNeighborhoodById(vm.Owner.NeighborhoodId);
+                _ownerRepo.AddOwner(vm.Owner);
 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                vm.Neighborhoods = _neighborhoodRepo.GetAll();
                 // If something goes wrong, just keep the user on the same page so they can try again
-                return View(owner);
+                return View(vm);
             }
         }
 
