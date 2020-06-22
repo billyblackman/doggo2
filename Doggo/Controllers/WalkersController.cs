@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Doggo.Models;
 using Doggo.Repositories;
@@ -13,19 +14,32 @@ namespace Doggo.Controllers
     public class WalkersController : Controller
     {
         private readonly WalkerRepository _walkerRepo;
+        private readonly OwnerRepository _ownerRepo;
+        private readonly DogRepository _dogRepo;
 
         // The constructor accepts an IConfiguration object as a parameter. This class comes from the ASP.NET framework and is useful for retrieving things out of the appsettings.json file like connection strings.
         public WalkersController(IConfiguration config)
         {
             _walkerRepo = new WalkerRepository(config);
+            _ownerRepo = new OwnerRepository(config);
+            _dogRepo = new DogRepository(config);
         }
 
         // GET: WalkersController
         public ActionResult Index()
         {
-            List<Walker> walkers = _walkerRepo.GetAllWalkers();
+            Owner owner = _ownerRepo.GetOwnerById(GetCurrentUserId());
 
-            return View(walkers);
+            if (owner != null)
+                {
+                    List<Walker> neighborhoodWalkers = _walkerRepo.GetWalkersInNeighborhood(owner.NeighborhoodId);
+                    return View(neighborhoodWalkers);
+                }
+            else
+                {
+                    List<Walker> allWalkers = _walkerRepo.GetAllWalkers();
+                    return View(allWalkers);
+                }
         }
 
         // GET: WalkersController/Details/5
@@ -101,6 +115,18 @@ namespace Doggo.Controllers
             catch
             {
                 return View();
+            }
+        }
+        private int GetCurrentUserId()
+        {
+            try
+            {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
+            }
+            catch
+            {
+            return 0;
             }
         }
     }
